@@ -1,8 +1,3 @@
-# KAALVAN 🌿
-### The Forest’s Last Line of Defense
-
-AI-powered planetary forest intelligence and environmental threat detection.
-
 <p align="center">
   <img src="docs/images/kaalvan-logo.png" alt="KAALVAN Logo" width="140" />
 </p>
@@ -14,6 +9,10 @@ AI-powered planetary forest intelligence and environmental threat detection.
 [![Architecture: s390x](https://img.shields.io/badge/Architecture-IBM_LinuxONE_(s390x)-052FAD?logo=ibm&logoColor=white)](https://www.ibm.com/products/linuxone)
 [![AI Engine: Scikit--Learn](https://img.shields.io/badge/AI_Engine-Scikit--Learn-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
 
+# KAALVAN 🌿
+## The Forest’s Last Line of Defense
+
+##AI-powered planetary forest intelligence and environmental threat detection.
 ---
 
 ## System Architecture & Flow Diagram
