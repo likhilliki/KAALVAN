@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: terraguard-db
+  namespace: terraguard-ai
+  labels:
+    app: terraguard-db
+    tier: database
+spec:
+  serviceName: "terraguard-db-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terraguard-db
+  template:
+    metadata:
+      labels:
+        app: terraguard-db
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: ["s390x", "amd64"]
+      containers:
+        - name: postgres
+          image: postgres:16-bullseye
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: terraguard_db
+            - name: POSTGRES_USER
+              value: terraguard
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terraguard-db-secret
+                  key: password
+                  optional: true
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: terraguard-ai
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: terraguard-db

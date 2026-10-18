@@ -1,0 +1,78 @@
+# ==============================================================================
+# TerraGuard AI — Production Docker Compose for IBM LinuxONE (s390x)
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  db:
+    # Official PostgreSQL with multi-arch s390x support
+    image: postgres:16-bullseye
+    platform: linux/s390x
+    container_name: terraguard-linuxone-db
+    restart: always
+    environment:
+      POSTGRES_DB: terraguard_db
+      POSTGRES_USER: terraguard
+      POSTGRES_PASSWORD: terraguard_linuxone_secure_pass
+    volumes:
+      - linuxone_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terraguard -d terraguard_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    platform: linux/s390x
+    container_name: terraguard-linuxone-backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+psycopg2://terraguard:terraguard_linuxone_secure_pass@db:5432/terraguard_db
+      PORT: 8000
+      HOST: 0.0.0.0
+      ENVIRONMENT: production
+      IS_LINUXONE: "true"
+      LINUXONE_TELEMETRY: "true"
+      NASA_FIRMS_MAP_KEY: ${NASA_FIRMS_MAP_KEY:-}
+      CORS_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    platform: linux/s390x
+    container_name: terraguard-linuxone-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+volumes:
+  linuxone_db_data:

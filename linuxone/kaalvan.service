@@ -1,0 +1,21 @@
+[Unit]
+Description=KAALVAN Planetary Environmental Intelligence Backend (IBM LinuxONE s390x)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/kaalvan/backend
+EnvironmentFile=/opt/kaalvan/backend/.env
+ExecStart=/opt/kaalvan/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+Restart=always
+RestartSec=5s
+LimitNOFILE=65536
+
+# Security Hardening
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terraguard-backend
+  namespace: terraguard-ai
+  labels:
+    app: terraguard-backend
+    tier: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: terraguard-backend
+  template:
+    metadata:
+      labels:
+        app: terraguard-backend
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: ["s390x", "amd64"]
+      containers:
+        - name: backend
+          image: image-registry.openshift-image-registry.svc:5000/terraguard-ai/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: ENVIRONMENT
+              value: "production"
+            - name: IS_LINUXONE
+              value: "true"
+            - name: DATABASE_URL
+              value: "postgresql+psycopg2://terraguard:terraguard_linuxone_secure_pass@db:5432/terraguard_db"
+            - name: NASA_FIRMS_MAP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: terraguard-secrets
+                  key: firms-key
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: terraguard-ai
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: terraguard-backend

@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: terraguard-route
+  namespace: terraguard-ai
+  labels:
+    app: terraguard-backend
+spec:
+  to:
+    kind: Service
+    name: backend
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
