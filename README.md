@@ -3,7 +3,9 @@
 
 AI-powered planetary forest intelligence and environmental threat detection.
 
-<img src="docs/images/kaalvan-logo.png" alt="KAALVAN Logo" width="140" centre />
+<p align="center">
+  <img src="docs/images/kaalvan-logo.png" alt="KAALVAN Logo" width="140" />
+</p>
 
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://python.org)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
