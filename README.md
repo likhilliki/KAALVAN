@@ -12,7 +12,7 @@
 # KAALVAN 🌿
 ## The Forest’s Last Line of Defense
 
-##AI-powered planetary forest intelligence and environmental threat detection.
+## AI-powered planetary forest intelligence and environmental threat detection.
 ---
 
 ## System Architecture & Flow Diagram
